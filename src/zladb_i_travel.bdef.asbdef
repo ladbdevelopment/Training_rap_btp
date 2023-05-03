@@ -1,0 +1,116 @@
+managed implementation in class zbp_ladb_i_travel unique;
+//strict ( 1 );
+
+define behavior for zladb_i_travel alias Travel
+persistent table zladb_travel
+with additional save
+lock master
+authorization master ( instance )
+etag master LastChangedAt // La parte de concurrencia también se maneja a nivel de bloqueo
+{
+  create;
+  update;
+  delete;
+
+  // Caracteriscas agregadas al comportamiento
+  //field (numbering : managed) TravelId; // --> Crear automáticamente el # de tipo RAW de 16
+  field ( mandatory ) AgencyId, OverallStatus, BookingFee, CurrencyCode;
+  field ( readonly ) LastChangedAt, LastChangedBy, CreatedAt, CreatedBy;
+
+  // Validaciones
+  validation validateCustomer on save { create; field CustomerId; }
+  validation validateDate on save { create; field BeginDate, EndDate; }
+  validation validateStatus on save { create; field OverallStatus; }
+
+  // Acciones sobre la misma instancia
+  action ( features : instance ) acceptTravel result [1] $self;
+  action ( features : instance ) rejectTravel result [1] $self;
+
+  // Acción para crear travel con copia de otro
+  action createTravelByTemplate external 'CreateTravelWithCopy' result [1] $self;
+
+  association _Booking { create; }
+
+  // Mapping para enviar los datos a la tabla de persistencia cuando los campos son iguales
+//  mapping for zladb_travel corresponding;
+
+  // Mapping para enviar los datos a la tabla de persistencia cuando no son iguales
+  mapping for zladb_travel
+    {
+      TravelId      = travel_id;
+      AgencyId      = agency_id;
+      CustomerId    = customer_id;
+      BeginDate     = begin_date;
+      EndDate       = end_date;
+      BookingFee    = booking_fee;
+      TotalPrice    = total_price;
+      CurrencyCode  = currency_code;
+      Description   = description;
+      OverallStatus = overall_status;
+      CreatedBy     = createdby;
+      CreatedAt     = createdat;
+      LastChangedBy = lastchangedby;
+      LastChangedAt = lastchangedat;
+    }
+ }
+
+define behavior for zladb_i_booking alias Booking
+persistent table zladb_booking
+lock dependent by _Travel
+authorization dependent by _Travel
+etag master LastChangedAt
+{
+  update;
+  delete;
+
+  field ( readonly ) TravelId;
+  field ( mandatory ) CarrierId, ConnectionId, FlightDate, BookingStatus;
+
+  // Validaciones
+  validation validateStatus on save { field BookingStatus; }
+
+  determination calculateTotalFlightPrice on modify { field FlightPrice, CurrencyCode; }
+
+  association _Travel;
+  association _BookingSupplement { create; }
+  mapping for zladb_booking
+    {
+      TravelId      = travel_id;
+      BookingId     = booking_id;
+      BookingDate   = booking_date;
+      CustomerId    = customer_id;
+      CarrierId     = carrier_id;
+      ConnectionId  = connection_id;
+      FlightDate    = flight_date;
+      FlightPrice   = flight_price;
+      CurrencyCode  = currency_code;
+      BookingStatus = booking_status;
+      LastChangedAt = last_changed_at;
+    }
+ }
+
+define behavior for zladb_i_booksuppl alias BookingSupplement
+persistent table zladb_booksuppl
+lock dependent by _Travel
+authorization dependent by _Travel
+etag master LastChangedAt
+{
+  update;
+  delete;
+  field ( readonly ) TravelId, BookingId;
+  field ( mandatory : create ) SupplementId, Price;
+
+  determination calculateTotalFlightPrice on modify { field Price, CurrencyCode; }
+
+  association _Travel;
+  association _Booking;
+  mapping for zladb_booksuppl
+    {
+      TravelId      = travel_id;
+      BookingId     = booking_id;
+      SupplementId  = supplement_id;
+      Price         = price;
+      CurrencyCode  = currency_code;
+      LastChangedAt = last_changed_at;
+    }
+ }
