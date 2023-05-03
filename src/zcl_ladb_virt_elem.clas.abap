@@ -15,7 +15,7 @@ CLASS zcl_ladb_virt_elem IMPLEMENTATION.
 
   METHOD if_sadl_exit_calc_element_read~get_calculation_info.
 
-    IF iv_entity = 'ZCOL_C_TRAVEL'.
+    IF iv_entity = 'ZLADB_C_TRAVEL'.
       LOOP AT it_requested_calc_elements ASSIGNING FIELD-SYMBOL(<fs_calc_element>).
         IF <fs_calc_element> = 'DISCOUNTPRICE'.
           APPEND 'TOTALPRICE' TO et_requested_orig_elements.
