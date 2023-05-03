@@ -29,7 +29,7 @@ define root view entity zladb_c_travel
       // Publicar una columna calculada o columna virtual
       @Semantics.amount.currencyCode: 'CurrencyCode'
       @EndUserText.label: 'Discount'
-      //@ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_LADB_VIRT_ELEM'
+      @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_LADB_VIRT_ELEM'
       // SADL - Service Adaptation Description Model
       virtual DiscountPrice : /dmo/total_price,
       
