@@ -16,6 +16,7 @@ etag master LastChangedAt // La parte de concurrencia también se maneja a nivel
   //field (numbering : managed) TravelId; // --> Crear automáticamente el # de tipo RAW de 16
   field ( mandatory ) AgencyId, OverallStatus, BookingFee, CurrencyCode;
   field ( readonly ) LastChangedAt, LastChangedBy, CreatedAt, CreatedBy;
+  field ( features : instance ) TravelId, OverallStatus;
 
   // Validaciones
   validation validateCustomer on save { create; field CustomerId; }
@@ -90,7 +91,7 @@ etag master LastChangedAt
  }
 
 define behavior for zladb_i_booksuppl alias BookingSupplement
-persistent table zladb_booksuppl
+with unmanaged save
 lock dependent by _Travel
 authorization dependent by _Travel
 etag master LastChangedAt
