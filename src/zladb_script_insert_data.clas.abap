@@ -1,28 +1,28 @@
-class zladb_script_insert_data definition
-  public
-  final
-  create public .
+CLASS zladb_script_insert_data DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
 
-  public section.
-    interfaces if_oo_adt_classrun.
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
 
-  protected section.
-  private section.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 ENDCLASS.
 
 
 
-CLASS ZLADB_SCRIPT_INSERT_DATA IMPLEMENTATION.
+CLASS zladb_script_insert_data IMPLEMENTATION.
 
 
-  method if_oo_adt_classrun~main.
+  METHOD if_oo_adt_classrun~main.
 
-    data: lt_travel   type table of zcol_travel,
-          lt_booking  type table of zcol_booking,
-          lt_book_sup type table of zcol_booksuppl.
+    DATA: lt_travel   TYPE TABLE OF zladb_travel,
+          lt_booking  TYPE TABLE OF zladb_booking,
+          lt_book_sup TYPE TABLE OF zladb_booksuppl.
 
-    select from /dmo/travel
-         fields travel_id,
+    SELECT FROM /dmo/travel
+         FIELDS travel_id,
                 agency_id,
                 customer_id,
                 begin_date,
@@ -31,35 +31,35 @@ CLASS ZLADB_SCRIPT_INSERT_DATA IMPLEMENTATION.
                 total_price,
                 currency_code,
                 description,
-                status as overall_status,
+                status AS overall_status,
                 createdby,
                 createdat,
                 lastchangedby,
                 lastchangedat
-    where travel_id between '00000010' and '00000040'
-    into corresponding fields of table @lt_travel.
+    WHERE travel_id BETWEEN '00000000' AND '00004336'
+    INTO CORRESPONDING FIELDS OF TABLE @lt_travel.
 
-    select * from /dmo/booking as booking
-           inner join @lt_travel as travel
-                   on travel~travel_id eq booking~travel_id
-           into corresponding fields of table @lt_booking
+    SELECT * FROM /dmo/booking AS booking
+           INNER JOIN @lt_travel AS travel
+                   ON travel~travel_id EQ booking~travel_id
+           INTO CORRESPONDING FIELDS OF TABLE @lt_booking
            ##itab_db_select.
 
-    select * from /dmo/book_suppl as suppl
-           inner join @lt_travel as travel
-                   on travel~travel_id eq suppl~travel_id
-            into corresponding fields of table @lt_book_sup.
+    SELECT * FROM /dmo/book_suppl AS suppl
+           INNER JOIN @lt_travel AS travel
+                   ON travel~travel_id EQ suppl~travel_id
+            INTO CORRESPONDING FIELDS OF TABLE @lt_book_sup.
 
-    delete from: zcol_travel,
-                 zcol_booking,
-                 zcol_booksuppl.
-    insert:
-        zladb_travel    from table @lt_travel,
-        zladb_booking   from table @lt_booking,
-        zladb_booksuppl from table @lt_book_sup.
+    DELETE FROM: zladb_travel,
+                 zladb_booking,
+                 zladb_booksuppl.
+    INSERT:
+        zladb_travel    FROM TABLE @lt_travel,
+        zladb_booking   FROM TABLE @lt_booking,
+        zladb_booksuppl FROM TABLE @lt_book_sup.
 
     out->write( sy-dbcnt ).
     out->write( 'DONE!' ).
 
-  endmethod.
+  ENDMETHOD.
 ENDCLASS.
