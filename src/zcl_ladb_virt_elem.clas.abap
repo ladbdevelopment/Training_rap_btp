@@ -29,7 +29,7 @@ CLASS zcl_ladb_virt_elem IMPLEMENTATION.
 
   METHOD if_sadl_exit_calc_element_read~calculate.
 
-    DATA lt_original_data TYPE STANDARD TABLE OF zcol_c_travel WITH DEFAULT KEY.
+    DATA lt_original_data TYPE STANDARD TABLE OF zladb_c_travel WITH DEFAULT KEY.
 
     lt_original_data = CORRESPONDING #( it_original_data ).
 

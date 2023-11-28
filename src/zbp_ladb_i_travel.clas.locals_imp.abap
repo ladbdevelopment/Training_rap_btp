@@ -505,7 +505,7 @@ CLASS lsc_ZLADB_I_TRAVEL IMPLEMENTATION.
 
 * ****Supplements***with unmanaged save***
 
-    DATA lt_supplements TYPE TABLE OF zcol_booksuppl.
+    DATA lt_supplements TYPE TABLE OF zladb_booksuppl.
 
     IF NOT create-bookingsupplement IS INITIAL.
       lt_supplements = CORRESPONDING #( create-bookingsupplement MAPPING travel_id     = %control-TravelId
